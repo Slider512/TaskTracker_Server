@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #0070c0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #0070c0;
+            color: #fff !important;
+            text-decoration: none;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {UserName}!</h1>
+        <p>Thank you for registering with us. Please confirm your email address by clicking the button below:</p>
+        <a href="{CallbackUrl}" class="button">Confirm Email</a>
+        <p>If the button doesn't work, copy and paste this link into your browser:</p>
+        <p><a href="{CallbackUrl}">{CallbackUrl}</a></p>
+        <p class="footer">If you did not register, please ignore this email.</p>
+    </div>
+</body>
+</html>

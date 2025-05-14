@@ -1,4 +1,6 @@
-﻿namespace Server.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Server.Models
 {
     public class Task
     {
@@ -12,9 +14,21 @@
         public string Status { get; set; }
         public string Priority { get; set; }
         public Guid? ParentTaskId { get; set; }
+
+        [ForeignKey("ParentTaskId")]
         public virtual Task ParentTask { get; set; }
-        public virtual ICollection<Task> Subtasks { get; set; }
+        public virtual ICollection<Task> Subtasks { get; set; } = new List<Task>();
         public virtual ICollection<Dependency> Dependencies { get; set; }
+        public string? ProjectId { get; set; }
+        public int? EffortHours { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+
+        [InverseProperty("ToTask")]
+        public List<Dependency> IncomingDependencies { get; set; } = new List<Dependency>();
+
+        [InverseProperty("FromTask")]
+        public List<Dependency> OutgoingDependencies { get; set; } = new List<Dependency>();
     }
 
     public class Dependency
