@@ -40,7 +40,7 @@ namespace Server.Services
 
             string templateContent = await File.ReadAllTextAsync(templatePath);
             string emailBody = templateContent
-                .Replace("{UserName}", user.UserName)
+                .Replace("{UserName}", user.Email) // Use Email instead of UserName
                 .Replace("{CallbackUrl}", callbackUrl);
 
             var message = new MimeMessage();

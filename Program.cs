@@ -42,8 +42,11 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Настройка базы данных (PostgreSQL)
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MSSQL")));
 
 // Настройка аутентификации JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -119,7 +122,7 @@ Audit.Core.Configuration.Setup()
     .UseEntityFramework(x => x
         //.UseDbContext<Server.Data.AppDbContext>()
         .AuditTypeExplicitMapper(m => m
-            .Map<Server.Models.Task, AuditLog>()
+            .Map<Server.Models.ProjectTask, AuditLog>()
             .AuditEntityAction<AuditLog>((ev, entry, entity) =>
             {
                 entity.Action = entry.Action;

@@ -4,14 +4,14 @@ namespace Server.Services
 {
     public class MSProjectService
     {
-        public List<Server.Models.Task> ParseMppFile(string filePath)
+        public List<Server.Models.ProjectTask> ParseMppFile(string filePath)
         {
             var project = new Project(filePath);
-            var tasks = new List<Server.Models.Task>();
+            var tasks = new List<Server.Models.ProjectTask>();
 
             foreach (var task in project.RootTask.Children)
             {
-                tasks.Add(new Server.Models.Task
+                tasks.Add(new Server.Models.ProjectTask
                 {
                     Id = new Guid(task.Guid),
                     Title = task.Name,
