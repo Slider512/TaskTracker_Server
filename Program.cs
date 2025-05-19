@@ -100,6 +100,12 @@ builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<AnalyticsService>();
 builder.Services.AddScoped<EmailService>();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // If the LoginPath isn't set, ASP.NET Core defaults the path to /Account/Login.
+    options.LoginPath = "/Login"; // Set your login path here
+});
+
 // Configure logging
 /*
 builder.Services.AddLogging(logging =>

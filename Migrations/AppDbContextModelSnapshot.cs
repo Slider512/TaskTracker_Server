@@ -17,6 +17,7 @@ namespace Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("bst")
                 .HasAnnotation("ProductVersion", "9.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -46,7 +47,7 @@ namespace Server.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("BC_IdentityRoles", "bst");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -71,7 +72,7 @@ namespace Server.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("BC_IdentityUserRoleClaims", "bst");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -96,7 +97,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("BC_IdentityUserClaims", "bst");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -118,7 +119,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("BC_IdentityUserLogins", "bst");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -133,7 +134,7 @@ namespace Server.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("BC_IdentityUserRoles", "bst");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -152,7 +153,7 @@ namespace Server.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("BC_IdentityUserTokens", "bst");
                 });
 
             modelBuilder.Entity("Server.Models.AuditLog", b =>
@@ -182,28 +183,103 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId", "Timestamp");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("BC_AuditLogs", "bst");
                 });
 
-            modelBuilder.Entity("Server.Models.ProjectTask", b =>
+            modelBuilder.Entity("Server.Models.Company", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Assignee")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BC_Companies", "bst");
+                });
+
+            modelBuilder.Entity("Server.Models.Project", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id", "CompanyId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("BC_Projects", "bst");
+                });
+
+            modelBuilder.Entity("Server.Models.ProjectResource", b =>
+                {
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ProjectTaskCompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProjectTaskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProjectTaskProjectUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CompanyId", "ProjectUid", "Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ProjectTaskCompanyId", "ProjectTaskProjectUid", "ProjectTaskId");
+
+                    b.ToTable("BC_Resources", "bst");
+                });
+
+            modelBuilder.Entity("Server.Models.ProjectTask", b =>
+                {
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("EffortHours")
-                        .HasColumnType("int");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -217,31 +293,43 @@ namespace Server.Migrations
                     b.Property<int>("Progress")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<int?>("WorkHours")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ParentTaskId");
+                    b.HasKey("CompanyId", "ProjectUid", "Id");
 
-                    b.ToTable("Tasks");
+                    b.HasIndex("CompanyId", "ProjectId", "ParentTaskId");
+
+                    b.ToTable("BC_Tasks", "bst");
                 });
 
             modelBuilder.Entity("Server.Models.ProjectTaskDependency", b =>
                 {
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("FromTaskId")
@@ -255,19 +343,23 @@ namespace Server.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("nvarchar(2)");
 
-                    b.HasKey("Id");
+                    b.HasKey("CompanyId", "ProjectId", "Id");
 
-                    b.HasIndex("FromTaskId");
+                    b.HasIndex("CompanyId", "ProjectId", "FromTaskId");
 
-                    b.HasIndex("ToTaskId");
+                    b.HasIndex("CompanyId", "ProjectId", "ToTaskId");
 
-                    b.ToTable("Dependencies");
+                    b.ToTable("BC_TaskLinks", "bst");
                 });
 
             modelBuilder.Entity("Server.Models.RefreshToken", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime2");
@@ -290,7 +382,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("BC_IdentityUserRefreshTokens", "bst");
                 });
 
             modelBuilder.Entity("Server.Models.User", b =>
@@ -301,8 +393,8 @@ namespace Server.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("CompanyName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -356,6 +448,8 @@ namespace Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -364,7 +458,7 @@ namespace Server.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("BC_IdentityUsers", "bst");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -418,27 +512,74 @@ namespace Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Server.Models.Project", b =>
+                {
+                    b.HasOne("Server.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Server.Models.ProjectResource", b =>
+                {
+                    b.HasOne("Server.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("Server.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("CompanyId", "ProjectUid")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.ProjectTask", null)
+                        .WithMany("AssignedUsers")
+                        .HasForeignKey("ProjectTaskCompanyId", "ProjectTaskProjectUid", "ProjectTaskId");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Server.Models.ProjectTask", b =>
                 {
+                    b.HasOne("Server.Models.Project", "Project")
+                        .WithMany("Tasks")
+                        .HasForeignKey("CompanyId", "ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Server.Models.ProjectTask", "ParentTask")
                         .WithMany("Subtasks")
-                        .HasForeignKey("ParentTaskId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("CompanyId", "ProjectId", "ParentTaskId");
 
                     b.Navigation("ParentTask");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Server.Models.ProjectTaskDependency", b =>
                 {
                     b.HasOne("Server.Models.ProjectTask", "FromTask")
                         .WithMany("OutgoingDependencies")
-                        .HasForeignKey("FromTaskId")
+                        .HasForeignKey("CompanyId", "ProjectId", "FromTaskId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Server.Models.ProjectTask", "ToTask")
                         .WithMany("IncomingDependencies")
-                        .HasForeignKey("ToTaskId")
+                        .HasForeignKey("CompanyId", "ProjectId", "ToTaskId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -458,8 +599,26 @@ namespace Server.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Server.Models.User", b =>
+                {
+                    b.HasOne("Server.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Server.Models.Project", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
             modelBuilder.Entity("Server.Models.ProjectTask", b =>
                 {
+                    b.Navigation("AssignedUsers");
+
                     b.Navigation("IncomingDependencies");
 
                     b.Navigation("OutgoingDependencies");

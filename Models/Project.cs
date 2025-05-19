@@ -1,14 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure;
 
 namespace Server.Models
 {
+    [Table("BC_Projects")]
+    [PrimaryKey(nameof(Id), nameof(CompanyId))]
     public class Project
     {
-        [Key]
         public Guid Id { get; set; }
 
-        [Key]
         public Guid CompanyId { get; set; }
 
         [ForeignKey(nameof(CompanyId))]

@@ -86,7 +86,7 @@ namespace Server.Controllers
                 {
                     Id = t.Id,
                     Title = t.Title,
-                    AssignedUsers = t.AssignedUsers.Select(item=>item.Id).ToList(),
+                    AssignedUsers = t.AssignedUsers.ToList(),
                     Status = t.Status,
                     StartDate = t.StartDate,
                     EndDate = t.EndDate,
@@ -148,7 +148,7 @@ namespace Server.Controllers
             {
                 Id = task.Id,
                 Title = task.Title,
-                AssignedUsers = task.AssignedUsers.Select(item=>item.Id).ToList(),
+                AssignedUsers = task.AssignedUsers.ToList(),
                 Status = task.Status,
                 StartDate = task.StartDate,
                 EndDate = task.EndDate,
@@ -225,7 +225,7 @@ namespace Server.Controllers
             {
                 Id = task.Id,
                 Title = task.Title,
-                AssignedUsers = task.AssignedUsers.Select(item => item.Id).ToList(),
+                AssignedUsers = task.AssignedUsers.ToList(),
                 Status = task.Status,
                 StartDate = task.StartDate,
                 EndDate = task.EndDate,

@@ -28,7 +28,7 @@ namespace Server.Services
                 var task = tasks[i];
                 worksheet.Cell(i + 2, 1).Value = task.Id.ToString();
                 worksheet.Cell(i + 2, 2).Value = task.Title;
-                worksheet.Cell(i + 2, 3).Value = task.AssignedUsers.Count==0? "Unassigned": string.Join(';', task.AssignedUsers.Select(item=>item.FullName).ToArray());
+                worksheet.Cell(i + 2, 3).Value = task.AssignedUsers.Count==0? "Unassigned": string.Join(';', task.AssignedUsers.Select(item=>item.Title).ToArray());
                 worksheet.Cell(i + 2, 4).Value = task.Status ?? "Not Started";
                 worksheet.Cell(i + 2, 5).Value = task.StartDate.ToString("yyyy-MM-dd");
                 worksheet.Cell(i + 2, 6).Value = task.EndDate.ToString("yyyy-MM-dd");

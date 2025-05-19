@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Server.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Server.DTOs
@@ -8,7 +9,7 @@ namespace Server.DTOs
         public Guid Id { get; set; } = Guid.Empty;
         [StringLength(4000)]
         public string Title { get; set; } = string.Empty;
-        public List<string> AssignedUsers { get; set; }
+        public List<ProjectResource> AssignedUsers { get; set; }
         [StringLength(255)]
         public string? Status { get; set; }
         public DateTime StartDate { get; set; }

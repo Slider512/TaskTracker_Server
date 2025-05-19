@@ -43,17 +43,17 @@ namespace Server.Controllers
             }
 
             var query = _context.Projects
-                .Where(item=>item.CompanyId== user.CompanyId)
+                .Where(item=>item.CompanyId == user.CompanyId)
                 .AsQueryable();
 
-            var projects = await query
+            var projects = query
                 .Select(t => new ProjectDto
                 {
                     Id = t.Id,
                     Name = t.Name,
                     CompanyId = t.CompanyId,
                 })
-                .ToListAsync();
+                .ToList();
 
             return Ok(projects);
         }
@@ -91,7 +91,7 @@ namespace Server.Controllers
                 {
                     Id = t.Id,
                     Title = t.Title,
-                    AssignedUsers = t.AssignedUsers.Select(item=>item.Id).ToList(),
+                    AssignedUsers = t.AssignedUsers.ToList(),
                     Status = t.Status,
                     StartDate = t.StartDate,
                     EndDate = t.EndDate,
@@ -124,17 +124,35 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Project>> CreateProject([FromBody] Project project)
+        public async Task<ActionResult<Project>> CreateProject([FromBody] ProjectDto project)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            project.Id = Guid.NewGuid();
-            project.CreatedAt = DateTime.UtcNow;
+            var userId = base.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
 
-            _context.Projects.Add(project);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            Server.Models.Project newProject = new Project()
+            {
+                CompanyId= user.CompanyId,
+                Id=Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                Name = project.Name
+            };
+
+
+            _context.Projects.Add(newProject);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetProjects), new { id = project.Id }, project);
@@ -143,7 +161,23 @@ namespace Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProject(string id)
         {
-            var project = await _context.Projects.FindAsync(id);
+            var userId = base.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            var project = await _context.Projects
+                .Where(item => item.CompanyId == user.CompanyId && item.Id == new Guid(id))
+                .AsQueryable()
+                .FirstOrDefaultAsync();
+
             if (project == null)
             {
                 return NotFound();

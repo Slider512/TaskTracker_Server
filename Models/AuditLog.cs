@@ -1,5 +1,8 @@
-﻿namespace Server.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Server.Models
 {
+    [Table("BC_AuditLogs")]
     public class AuditLog
     {
         public int Id { get; set; }

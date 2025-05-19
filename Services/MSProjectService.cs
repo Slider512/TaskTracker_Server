@@ -19,7 +19,7 @@ namespace Server.Services
                     EndDate = task.Finish,
                     Progress = task.PercentComplete,
                     // = task.Cost,
-                    EffortHours = (int)(task.Work.Convert(TimeUnitType.Hour).ToDouble())
+                    WorkHours = (int)(task.Work.Convert(TimeUnitType.Hour).ToDouble())
                 });
             }
 
